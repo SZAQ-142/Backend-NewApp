@@ -17,22 +17,26 @@ if (!MONGO_URI) {
 
 // Middleware
 app.use(express.json());
-app.use(cors());
 
-// ✅ MongoDB Connection (Fixed)
-mongoose.connect(MONGO_URI)
+// ✅ CORS Setup (Allow only frontend URL in production)
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "*", // Allow frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
+// MongoDB Connection
+mongoose
+  .connect(MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
-  .catch(err => {
+  .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
     process.exit(1);
   });
 
-// ✅ Root Route (Fixes "Cannot GET /")
-app.get("/", (req, res) => {
-  res.send("🚀 Backend is running!");
-});
-
-// ✅ Define Mongoose Schema and Model
+// Define Mongoose Schema and Model
 const itemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: String,
@@ -40,9 +44,12 @@ const itemSchema = new mongoose.Schema({
 
 const Item = mongoose.model("Item", itemSchema);
 
-// ✅ CRUD Routes
+// ✅ Root Route (Fixes "Cannot GET /")
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running!");
+});
 
-// GET all items
+// ✅ GET all items
 app.get("/api/items", async (req, res) => {
   try {
     const items = await Item.find();
@@ -52,7 +59,7 @@ app.get("/api/items", async (req, res) => {
   }
 });
 
-// GET a single item by ID
+// ✅ GET a single item by ID
 app.get("/api/items/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -64,7 +71,7 @@ app.get("/api/items/:id", async (req, res) => {
   }
 });
 
-// POST new item
+// ✅ POST new item
 app.post("/api/items", async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -77,12 +84,16 @@ app.post("/api/items", async (req, res) => {
   }
 });
 
-// UPDATE an item
+// ✅ UPDATE an item
 app.put("/api/items/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description } = req.body;
-    const updatedItem = await Item.findByIdAndUpdate(id, { name, description }, { new: true, runValidators: true });
+    const updatedItem = await Item.findByIdAndUpdate(
+      id,
+      { name, description },
+      { new: true, runValidators: true }
+    );
     if (!updatedItem) return res.status(404).json({ error: "Item not found" });
     res.json(updatedItem);
   } catch (error) {
@@ -90,7 +101,7 @@ app.put("/api/items/:id", async (req, res) => {
   }
 });
 
-// DELETE an item
+// ✅ DELETE an item
 app.delete("/api/items/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -102,5 +113,5 @@ app.delete("/api/items/:id", async (req, res) => {
   }
 });
 
-// ✅ Start Server (Fixed console.log)
+// ✅ Start Server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
