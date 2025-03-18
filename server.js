@@ -19,15 +19,20 @@ if (!MONGO_URI) {
 app.use(express.json());
 app.use(cors());
 
-// MongoDB Connection
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+// ✅ MongoDB Connection (Fixed)
+mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => {
     console.error("❌ MongoDB connection error:", err);
     process.exit(1);
   });
 
-// Define Mongoose Schema and Model
+// ✅ Root Route (Fixes "Cannot GET /")
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running!");
+});
+
+// ✅ Define Mongoose Schema and Model
 const itemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: String,
@@ -35,12 +40,9 @@ const itemSchema = new mongoose.Schema({
 
 const Item = mongoose.model("Item", itemSchema);
 
-// ✅ Root Route (Fixes "Cannot GET /")
-app.get("/", (req, res) => {
-  res.send("🚀 Backend is running!");
-});
+// ✅ CRUD Routes
 
-// ✅ GET all items
+// GET all items
 app.get("/api/items", async (req, res) => {
   try {
     const items = await Item.find();
@@ -50,7 +52,7 @@ app.get("/api/items", async (req, res) => {
   }
 });
 
-// ✅ GET a single item by ID
+// GET a single item by ID
 app.get("/api/items/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -62,7 +64,7 @@ app.get("/api/items/:id", async (req, res) => {
   }
 });
 
-// ✅ POST new item
+// POST new item
 app.post("/api/items", async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -75,7 +77,7 @@ app.post("/api/items", async (req, res) => {
   }
 });
 
-// ✅ UPDATE an item
+// UPDATE an item
 app.put("/api/items/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -88,7 +90,7 @@ app.put("/api/items/:id", async (req, res) => {
   }
 });
 
-// ✅ DELETE an item
+// DELETE an item
 app.delete("/api/items/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -100,5 +102,5 @@ app.delete("/api/items/:id", async (req, res) => {
   }
 });
 
-// ✅ Start Server
+// ✅ Start Server (Fixed console.log)
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
