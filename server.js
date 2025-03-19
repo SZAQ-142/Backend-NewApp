@@ -29,7 +29,6 @@ mongoose
     process.exit(1);
   });
 
-
 // Define Mongoose Schema and Model
 const itemSchema = new mongoose.Schema({
   name: { type: String, required: true },
