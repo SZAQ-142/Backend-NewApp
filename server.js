@@ -20,7 +20,7 @@ const allowedOrigins = ['https://frontend-new-app-og7t.vercel.app','https://fron
 // Middleware
 app.use(express.json());
 app.use(cors({origin:allowedOrigins}));
-app.use('/api/items',router);
+// app.use('/api/items',router);
 
 // Connect to MongoDB
 mongoose
