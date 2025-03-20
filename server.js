@@ -18,7 +18,7 @@ if (!MONGO_URI) {
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({origin:"https://frontend-new-app-og7t.vercel.app/"}));
 
 // Connect to MongoDB
 mongoose
