@@ -16,9 +16,10 @@ if (!MONGO_URI) {
   process.exit(1);
 }
 
+const allowedOrigins = ['https://frontend-new-app-og7t.vercel.app','https://frontend-new-app-og7t.vercel.app/add','https://frontend-new-app-og7t.vercel.app/edit/:id']
 // Middleware
 app.use(express.json());
-app.use(cors({origin:"https://frontend-new-app-og7t.vercel.app"}));
+app.use(cors({origin:allowedOrigins}));
 
 // Connect to MongoDB
 mongoose
